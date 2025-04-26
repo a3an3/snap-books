@@ -12,6 +12,7 @@ interface UserStateProps {
 export interface Book {
   author: string | null;
   cover_image: string | null;
+  cover_image_file_path: string | null;
   created_at: string;
   description: string | null;
   finished_reading: string | null;
@@ -155,6 +156,61 @@ export class UserState {
   async logout() {
     await this.supabase?.auth.signOut();
     goto("/");
+  }
+
+  async uploadBookCover(file: File, bookId: any) {
+    if (!this.supabase || !this.user) {
+      return;
+    }
+
+    const timestamp = new Date().getTime();
+    const filePath = `${this.user.id}/${timestamp}_${file.name}`;
+    const { error: uploadError } = await this.supabase.storage
+      .from("book-covers")
+      .upload(filePath, file);
+    if (uploadError) {
+      return console.log(uploadError);
+    }
+    const { data, error: signedUrlError } = await this.supabase.storage
+      .from("book-covers")
+      .createSignedUrl(filePath, 60 * 60 * 24 * 365);
+
+    if (signedUrlError || !data?.signedUrl) {
+      return;
+    }
+    await this.updateBook(bookId, {
+      cover_image: data.signedUrl,
+      cover_image_file_path: filePath,
+    });
+  }
+
+  async deleteBookFromLibrary(bookId: number) {
+    if (!this.supabase) {
+      return;
+    }
+
+    const { data, error: selectError } = await this.supabase
+      .from("books")
+      .select("cover_image_file_path")
+      .eq("id", bookId)
+      .single();
+    const { status, error: deleteError } = await this.supabase
+      .from("books")
+      .delete()
+      .eq("id", bookId);
+
+    if (!deleteError && !selectError && status === 204) {
+      if (data.cover_image_file_path) {
+        const { error: removeError } = await this.supabase.storage
+          .from("book-covers")
+          .remove([data.cover_image_file_path]);
+        if (removeError) {
+          console.log(removeError);
+        }
+      }
+      this.allBooks = this.allBooks.filter((book) => book.id !== bookId);
+      goto("/private/dashboard");
+    }
   }
 }
 

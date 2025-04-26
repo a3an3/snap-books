@@ -2,6 +2,7 @@
     import {type Book, getUserState} from "$lib/state/user-state.svelte"
     import {Button, StarRating} from "$components";
     import Icon from "@iconify/svelte";
+    import Dropzone from "svelte-file-dropzone";
 
     interface BookPageProps {
         data: {
@@ -43,8 +44,17 @@
         }
     }
 
-    async function updateDatabaseRating(newRating) {
+    async function updateDatabaseRating(newRating: number) {
         await userContext.updateBook(book.id, {rating: newRating})
+    }
+
+    async function handleDrop(e: CustomEvent<any>) {
+        const {acceptedFiles} = e.detail;
+
+        if (acceptedFiles.length) {
+            const file = acceptedFiles[0] as File;
+            await userContext.uploadBookCover(file, book.id);
+        }
     }
 
 </script>
@@ -117,17 +127,25 @@
             <div class="button-container mt-m">
                 <Button isSecondary={true}
                         onclick={toggleEditModeAndSaveToDatabase}>{isEditMode ? "Save changes" : "Edit"}</Button>
-                <Button isDanger={true} onclick={() => console.log("Toggle")}>Delete book from library</Button>
+                <Button isDanger={true} onclick={() => userContext.deleteBookFromLibrary(book.id)}>Delete book from
+                    library
+                </Button>
             </div>
         </div>
         <div class="book-cover">
             {#if book.cover_image}
                 <img src={book.cover_image} alt=""/>
             {:else}
-                <button class="add-cover">
+                <Dropzone
+                        on:drop={handleDrop}
+                        multiple={false}
+                        accept="image/*"
+                        maxSize={5 * 1024 * 1024}
+                        containerClasses={"dropzone-cover"}>
+
                     <Icon icon="bi:camera-fill" width="40"/>
                     Add cover image
-                </button>
+                </Dropzone>
             {/if}
         </div>
     </div>
@@ -163,13 +181,6 @@
         border-radius: inherit;
     }
 
-    .add-cover {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
     .input {
         padding: 8px 4px;
         width: 100%;
@@ -192,5 +203,16 @@
 
     .input-author p {
         margin-right: 8px;
+    }
+
+    :global(.dropzone-cover) {
+        height: 100%;
+        border-radius: 15px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        border: unset !important;
+        cursor: pointer;
     }
 </style>

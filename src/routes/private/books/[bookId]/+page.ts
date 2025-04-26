@@ -6,6 +6,7 @@ export const load: PageLoad = async ({ parent, params }) => {
 
   const { bookId } = params;
 
+  // USELESS for the use case
   const { data } = await supabase
     .from("books")
     .select("*")

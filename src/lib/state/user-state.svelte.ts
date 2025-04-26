@@ -23,6 +23,8 @@ export interface Book {
   user_id: string;
 }
 
+type UpdatableBookFields = Omit<Book, "id" | "user_id" | "created_at">;
+
 export class UserState {
   session = $state<Session | null>(null);
   supabase = $state<SupabaseClient<Database> | null>(null);
@@ -32,6 +34,10 @@ export class UserState {
 
   constructor(data: UserStateProps) {
     this.updateState(data);
+  }
+
+  getBookById(bookId: number) {
+    return this.allBooks.find((book) => book.id === bookId);
   }
 
   updateState(data: UserStateProps) {
@@ -74,6 +80,29 @@ export class UserState {
     this.userName = userNamesResponse.data.name;
   }
 
+  async updateBook(bookId: number, updateObject: Partial<UpdatableBookFields>) {
+    if (!this.supabase) {
+      return;
+    }
+    const { status } = await this.supabase
+      .from("books")
+      .update(updateObject)
+      .eq("id", bookId);
+
+    if (status === 204) {
+      this.allBooks = this.allBooks.map((book) => {
+        if (book.id === bookId) {
+          return {
+            ...book,
+            ...updateObject,
+          };
+        } else {
+          return book;
+        }
+      });
+    }
+  }
+
   getHighestRatedBooks() {
     return this.allBooks
       .filter((book) => book.rating)
@@ -91,7 +120,7 @@ export class UserState {
       .slice(0, 9);
   }
 
-  getBooksByGenre() {
+  getBooksByFavoriteGenre() {
     const favoriteGenre = this.getFavoriteGenre();
     return this.allBooks
       .filter((book) => book.genre?.includes(favoriteGenre))

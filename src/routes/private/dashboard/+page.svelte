@@ -22,7 +22,7 @@
     </div>
     <BookCategory booksToDisplay={userContext.getHighestRatedBooks()} categoryName="Favorite books"/>
     <BookCategory booksToDisplay={userContext.getRecentlyAddedUnreadBooks()} categoryName="Recently added books"/>
-    <BookCategory booksToDisplay={userContext.getBooksByGenre()}
+    <BookCategory booksToDisplay={userContext.getBooksByFavoriteGenre()}
                   categoryName={`Favorite Genre: ${userContext.getFavoriteGenre()}`}/>
 </div>
 

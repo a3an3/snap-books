@@ -1,7 +1,7 @@
 <script lang="ts">
     import websiteLogo from '$assets/app-logo.svg'
     import {Button} from "$lib/components";
-    import {getUserState} from "$lib/state/UserState.svelte";
+    import {getUserState} from "$lib/state/user-state.svelte.js";
 
     let userContext = getUserState();
     let {user} = $derived(userContext);

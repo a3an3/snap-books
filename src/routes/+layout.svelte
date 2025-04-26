@@ -2,7 +2,7 @@
     import "./../app.css"
     import {Header} from "$components";
     import {invalidate} from '$app/navigation'
-    import {setUserState} from "$lib/state/UserState.svelte";
+    import {setUserState} from "$lib/state/user-state.svelte.js";
 
     let {children, data} = $props();
     let {session, supabase} = $derived(data);

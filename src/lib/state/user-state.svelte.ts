@@ -74,6 +74,55 @@ export class UserState {
     this.userName = userNamesResponse.data.name;
   }
 
+  getHighestRatedBooks() {
+    return this.allBooks
+      .filter((book) => book.rating)
+      .toSorted((a, z) => z.rating! - a.rating!)
+      .slice(0, 9);
+  }
+
+  getRecentlyAddedUnreadBooks() {
+    return this.allBooks
+      .filter((book) => !book.started_reading && !book.finished_reading)
+      .toSorted(
+        (a, z) =>
+          new Date(z.created_at!).getTime() - new Date(a.created_at!).getTime(),
+      )
+      .slice(0, 9);
+  }
+
+  getBooksByGenre() {
+    const favoriteGenre = this.getFavoriteGenre();
+    return this.allBooks
+      .filter((book) => book.genre?.includes(favoriteGenre))
+      .slice(0, 9);
+  }
+
+  getFavoriteGenre() {
+    if (this.allBooks.length === 0) {
+      return "";
+    }
+    const genreCounts: { [key: string]: number } = {};
+
+    this.allBooks.forEach((book) => {
+      const genres = book.genre ? book.genre.split(",") : [];
+      genres.forEach((genre) => {
+        const trimmedGenre = genre.trim();
+        if (trimmedGenre) {
+          if (!genreCounts[trimmedGenre]) {
+            genreCounts[trimmedGenre] = 1;
+          } else {
+            genreCounts[trimmedGenre] += 1;
+          }
+        }
+      });
+    });
+
+    return Object.keys(genreCounts).reduce((a, b) =>
+      genreCounts[a] > genreCounts[b] ? a : b,
+    );
+  }
+
   async logout() {
     await this.supabase?.auth.signOut();
     goto("/");

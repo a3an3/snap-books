@@ -26,6 +26,8 @@
     <div class="book-info">
         <h4>{book.title}</h4>
         <p class="mb-s">{book.author}</p>
+    </div>
+    <div class="rating">
         <StarRating isReadOnly={true} value={book.rating || 0}/>
     </div>
 </a>
@@ -83,6 +85,12 @@
         padding: 4px 8px;
         width: auto;
         background-color: rgba(4, 59, 92, 0.7);
+    }
+
+    .rating {
+        position: absolute;
+        bottom: 10px;
+        left: 20px;
     }
 
 </style>

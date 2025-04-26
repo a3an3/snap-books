@@ -4,11 +4,11 @@
     import {getUserState} from "$lib/state/user-state.svelte.js";
 
     let userContext = getUserState();
-    let {user} = $derived(userContext);
+    let {user, userName} = $derived(userContext);
 </script>
 
 <header>
-    <a href="/">
+    <a href={user? "/private/dashboard" : "/"}>
         <img class="logo" src={websiteLogo} alt="">
     </a>
     <nav>
@@ -24,7 +24,7 @@
         {:else}
             <ul>
                 <li>
-                    <p>{user.email}</p>
+                    <p>{userName}</p>
                 </li>
                 <li>
                     <Button isMenu={true} onclick={() => userContext.logout()}>Logout</Button>

@@ -134,10 +134,21 @@ export class UserState {
       .slice(0, 9);
   }
 
-  getReadingBooks() {
+  getStartedBooks() {
     return this.allBooks.filter(
       (book) => book.started_reading && !book.finished_reading,
     );
+  }
+
+  getRecentlyFinishedBooks() {
+    return this.allBooks
+      .filter((book) => book.finished_reading)
+      .toSorted(
+        (a, z) =>
+          new Date(z.finished_reading!).getTime() -
+          new Date(a.finished_reading!).getTime(),
+      )
+      .slice(0, 10);
   }
 
   getFavoriteGenre() {

@@ -21,17 +21,22 @@
         </div>
     </div>
     {#if allBooks.length}
-        {#if userContext.getReadingBooks().length}
-            <BookCategory booksToDisplay={userContext.getReadingBooks()}
+        {#if userContext.getStartedBooks().length}
+            <BookCategory booksToDisplay={userContext.getStartedBooks()}
                           categoryName="Currently reading"/>
         {/if}
         {#if userContext.getHighestRatedBooks().length}
             <BookCategory booksToDisplay={userContext.getHighestRatedBooks()} categoryName="Favorite books"/>
         {/if}
-        <BookCategory booksToDisplay={userContext.getRecentlyAddedUnreadBooks()} categoryName="Recently added books"/>
+        <BookCategory booksToDisplay={userContext.getRecentlyAddedUnreadBooks()}
+                      categoryName="Recently added unread books"/>
         {#if userContext.allBooks.filter((book) => book.genre).length !== 0}
             <BookCategory booksToDisplay={userContext.getBooksByFavoriteGenre()}
                           categoryName={`Favorite Genre: ${userContext.getFavoriteGenre()}`}/>
+        {/if}
+        {#if userContext.getRecentlyFinishedBooks().length}
+            <BookCategory booksToDisplay={userContext.getRecentlyFinishedBooks()}
+                          categoryName="Recently finished books"/>
         {/if}
     {:else}
 

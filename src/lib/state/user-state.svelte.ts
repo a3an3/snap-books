@@ -24,6 +24,12 @@ export interface Book {
   user_id: string;
 }
 
+export interface OpenAiBook {
+  author: string;
+  bookTitle: string;
+  genre: string;
+}
+
 type UpdatableBookFields = Omit<Book, "id" | "user_id" | "created_at">;
 
 export class UserState {
@@ -182,6 +188,33 @@ export class UserState {
       cover_image: data.signedUrl,
       cover_image_file_path: filePath,
     });
+  }
+
+  async addBooksToLibrary(booksToAdd: OpenAiBook[]) {
+    if (!this.supabase || !this.user) return;
+
+    const userId = this.user.id;
+
+    const processedBooks = booksToAdd.map((book) => ({
+      title: book.bookTitle,
+      author: book.author,
+      genre: book.genre,
+      user_id: userId,
+    }));
+
+    const { error } = await this.supabase.from("books").insert(processedBooks);
+    if (error) {
+      throw new Error(error.message);
+    } else {
+      const { data } = await this.supabase
+        .from("books")
+        .select("*")
+        .eq("user_id", userId);
+      if (!data) {
+        throw new Error("could not retrieve all books for user");
+      }
+      this.allBooks = data;
+    }
   }
 
   async deleteBookFromLibrary(bookId: number) {

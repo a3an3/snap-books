@@ -212,7 +212,6 @@
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
-        border: unset !important;
         cursor: pointer;
     }
 </style>

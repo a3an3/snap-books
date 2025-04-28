@@ -1,3 +1,8 @@
+
+:root {
+    --dark-red: rgb(131, 0, 0);
+}
+
 *,
 *::after,
 *::before {
@@ -24,7 +29,6 @@ li {
     margin: 0;
     padding: 0;
     text-indent: 0;
-    list-style-type: 0;
 }
 
 button {
@@ -69,6 +73,7 @@ h4 {
     line-height: 1.3;
     font-weight: normal;
 }
+
 p,
 li {
     font-size: 20px;
@@ -139,7 +144,7 @@ p {
 }
 
 .default-margin {
-    margin: 0px 13vw 0px 13vw;
+    margin: 0 13vw 0 13vw;
 }
 
 .block {
@@ -157,6 +162,7 @@ textarea {
     border: none;
     min-height: 48px;
 }
+
 textarea {
     height: 120px;
 }

@@ -134,6 +134,12 @@ export class UserState {
       .slice(0, 9);
   }
 
+  getReadingBooks() {
+    return this.allBooks.filter(
+      (book) => book.started_reading && !book.finished_reading,
+    );
+  }
+
   getFavoriteGenre() {
     if (this.allBooks.filter((book) => book.genre).length === 0) {
       return "";

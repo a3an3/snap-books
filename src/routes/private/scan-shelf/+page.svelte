@@ -8,8 +8,8 @@
     let userContext = getUserState();
     let isLoading = $state(false);
     let errorMessage = $state("");
-    let recognizedBooks = $state<OpenAiBook[]>([1]);
-    let booksSuccessfullyAdded = $state(true);
+    let recognizedBooks = $state<OpenAiBook[]>([]);
+    let booksSuccessfullyAdded = $state(false);
 
 
     async function handleDrop(e: CustomEvent<any>) {
@@ -87,6 +87,7 @@
             <table class="book-list mb-m">
                 <thead>
                 <tr>
+                    <th>No</th>
                     <th>Title</th>
                     <th>Author</th>
                     <th>Genre</th>
@@ -96,6 +97,7 @@
                 <tbody>
                 {#each recognizedBooks as book, i}
                     <tr>
+                        <td>{i + 1}</td>
                         <td>{book.bookTitle}</td>
                         <td>{book.author}</td>
                         <td>{book.genre}</td>
@@ -138,8 +140,13 @@
 
     .book-list td {
         padding: 12px 16px;
+        width: 20%;
         border-bottom: 1px solid rgb(205, 205, 205);
         font-size: 20px;
+    }
+
+    .book-list td:first-child, .book-list td:last-child {
+        width: 5%;
     }
 
     .book-list tr:last-child td {
@@ -178,8 +185,8 @@
     }
 
     .button-container {
-        max-width: 300px; /* control button width */
-        width: 100%; /* optional: makes button nicely responsive within max-width */
+        max-width: 300px;
+        width: 100%;
     }
 
     .spinner-container {

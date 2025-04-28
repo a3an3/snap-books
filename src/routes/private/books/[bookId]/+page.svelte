@@ -201,6 +201,11 @@
         align-items: center;
     }
 
+    .button-container {
+        display: flex;
+        gap: 30px;
+    }
+
     .input-author p {
         margin-right: 8px;
     }

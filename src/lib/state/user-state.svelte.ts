@@ -135,7 +135,7 @@ export class UserState {
   }
 
   getFavoriteGenre() {
-    if (this.allBooks.length === 0) {
+    if (this.allBooks.filter((book) => book.genre).length === 0) {
       return "";
     }
     const genreCounts: { [key: string]: number } = {};
@@ -157,11 +157,6 @@ export class UserState {
     return Object.keys(genreCounts).reduce((a, b) =>
       genreCounts[a] > genreCounts[b] ? a : b,
     );
-  }
-
-  async logout() {
-    await this.supabase?.auth.signOut();
-    goto("/");
   }
 
   async uploadBookCover(file: File, bookId: any) {
@@ -243,6 +238,60 @@ export class UserState {
       }
       this.allBooks = this.allBooks.filter((book) => book.id !== bookId);
       goto("/private/dashboard");
+    }
+  }
+
+  async updateAccountData(userEmail: string, userName: string) {
+    if (!this.session) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/update-account", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.session.access_token}`,
+        },
+        body: JSON.stringify({
+          userEmail,
+          userName,
+        }),
+      });
+
+      if (response.ok) {
+        this.userName = userName;
+      }
+    } catch (error) {
+      console.log("Failed to update user data", error);
+    }
+  }
+
+  async logout() {
+    await this.supabase?.auth.signOut();
+    goto("/");
+  }
+
+  async deleteAccount() {
+    if (!this.session) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/delete-account", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.session.access_token}`,
+        },
+      });
+
+      if (response.ok) {
+        await this.logout();
+        goto("/");
+      }
+    } catch (error) {
+      console.log("Failed to delete account", error);
     }
   }
 }
